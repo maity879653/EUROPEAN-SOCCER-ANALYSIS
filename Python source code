@@ -1,0 +1,51 @@
+//Python code to load from the database:
+import sqlite3
+import pandas as pd
+
+# Connect to the database
+conn = sqlite3.connect('soccer.db')
+
+# Load the data into a DataFrame
+df = pd.read_sql_query("SELECT * FROM matches", conn)
+
+# Close the database connection
+conn.close()
+
+# Display the DataFrame
+print(df.head())
+// Python code to clean and process the data
+# Remove duplicates
+df.drop_duplicates(inplace=True)
+
+# Fill in missing values with 0
+df.fillna(0, inplace=True)
+
+# Calculate the total goals and shots for each match
+df['total_goals'] = df['home_goals'] + df['away_goals']
+df['total_shots'] = df['home_shots'] + df['away_shots']
+
+# Calculate the average goals and shots per match for each team
+df['home_goals_avg'] = df.groupby('home_team')['home_goals'].transform('mean')
+df['away_goals_avg'] = df.groupby('away_team')['away_goals'].transform('mean')
+df['home_shots_avg'] = df.groupby('home_team')['home_shots'].transform('mean')
+df['away_shots_avg'] = df.groupby('away_team')['away_shots'].transform('mean')
+// Python code to visualize the data
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Create a bar chart of the total goals for each match
+sns.barplot(x='match_id', y='total_goals', data=df)
+plt.title('Total Goals for Each Match')
+plt.xlabel('Match ID')
+plt.ylabel('Total Goals')
+plt.show()
+
+#
+# Create a scatter plot of the average goals and shots per match for each team
+sns.scatterplot(x='home_goals_avg', y='home_shots_avg', data=df, label='Home Team')
+sns.scatterplot(x='away_goals_avg', y='away_shots_avg', data=df, label='Away Team')
+plt.title('Average Goals and Shots per Match for Each Team')
+plt.xlabel('Average Goals per Match')
+plt.ylabel('Average Shots per Match')
+plt.legend()
+plt.show()
