@@ -1,0 +1,108 @@
+Sql queries to create and insert data into database:
+CREATE TABLE matches (
+  match_id INTEGER PRIMARY KEY,
+  date DATE,
+  home_team VARCHAR(50),
+  away_team VARCHAR(50),
+  home_goals INTEGER,
+  away_goals INTEGER,
+  home_shots INTEGER,
+  away_shots INTEGER
+);
+
+INSERT INTO matches VALUES
+  (1, '2022-01-01', 'Barcelona', 'Real Madrid', 2, 1, 10, 12),
+  (2, '2022-01-02', 'Bayern Munich', 'Borussia', 3, 0, 15, 7),
+  (3, '2022-01-03', 'Paris Saint-G.', 'Liverpool', 1, 1, 9, 11),
+  (4, '2022-01-04', 'Juventus', 'Manchester Utd', 2, 2, 12, 8),
+  (5, '2022-01-05', 'Chelsea', 'Arsenal', 1, 0, 11, 9),
+  (6, '2022-01-06', 'Manchester City', 'Tottenham', 4, 1, 14, 6),
+  (7, '2022-01-07', 'Atletico Madrid', 'Valencia', 2, 0, 10, 8),
+  (8, '2022-01-08', 'Inter Milan', 'AC Milan', 2, 1, 13, 10),
+  (9, '2022-01-09', 'Borussia', 'Barcelona', 0, 2, 8, 14),
+  (10, '2022-01-10', 'Liverpool', 'Bayern Munich', 2, 3, 11, 15);
+Show all columns:
+SELECT *
+FROM matches;
+Show the home team and away team names for all matches:
+SELECT home_team_name, away_team_name
+FROM matches;
+Show the number of goals scored by each team in each match:
+SELECT home_team_name, home_goals, away_team_name, away_goals
+FROM matches;
+Show the total number of goals scored by each team across all matches:
+SELECT team_name, SUM(goals) as total_goals
+FROM (
+    SELECT home_team_name as team_name, home_goals as goals
+    FROM matches
+    UNION ALL
+    SELECT away_team_name as team_name, away_goals as goals
+    FROM matches
+) t
+GROUP BY team_name
+ORDER BY total_goals DESC;
+Show the average number of shots taken by each team per match:
+SELECT team_name, AVG(shots) as avg_shots
+FROM (
+    SELECT home_team_name as team_name, home_shots as shots
+    FROM matches
+    UNION ALL
+    SELECT away_team_name as team_name, away_shots as shots
+    FROM matches
+) t
+GROUP BY team_name
+ORDER BY avg_shots DESC;
+Which teams have the highest and lowest win percentages in home games and away games?
+SELECT 
+    team_long_name,
+    AVG(home_win) AS home_win_pct,
+    AVG(away_win) AS away_win_pct
+FROM (
+    SELECT 
+        home_team_api_id,
+        CASE WHEN home_team_goal > away_team_goal THEN 1 ELSE 0 END AS home_win,
+        CASE WHEN away_team_goal > home_team_goal THEN 1 ELSE 0 END AS away_win
+    FROM Match
+) AS match_results
+JOIN Team
+    ON match_results.home_team_api_id = Team.team_api_id
+GROUP BY team_long_name
+ORDER BY home_win_pct DESC, away_win_pct DESC;
+Which players have the highest and lowest overall ratings, and what are their corresponding attributes?
+SELECT 
+    player_name,
+    overall_rating,
+    potential,
+    preferred_foot,
+    attacking_work_rate,
+    defensive_work_rate,
+    crossing,
+    finishing,
+    heading_accuracy,
+    short_passing,
+    volleys
+FROM Player_Attributes
+JOIN (
+    SELECT 
+        player_api_id,
+        MAX(date) AS max_date
+    FROM Player_Attributes
+    GROUP BY player_api_id
+) AS latest_rating
+    ON Player_Attributes.player_api_id = latest_rating.player_api_id
+    AND Player_Attributes.date = latest_rating.max_date
+JOIN Player
+    ON Player_Attributes.player_api_id = Player.player_api_id
+ORDER BY overall_rating DESC
+LIMIT 10;
+Find the top 10 teams with the most clean sheets (matches in which they did not concede a goal):
+SELECT team_name, COUNT(*) AS clean_sheets
+FROM match JOIN team ON match.home_team_api_id = team.team_api_id
+WHERE away_team_goal = 0
+UNION
+SELECT team_name, COUNT(*) AS clean_sheets
+FROM match JOIN team ON match.away_team_api_id = team.team_api_id
+WHERE home_team_goal = 0
+GROUP BY team_name
+ORDER BY clean_sheets DESC
+LIMIT 10;
