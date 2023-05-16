@@ -1,11 +1,27 @@
-Match ID    Date           Home Team       Away Team       Home Goals    Away Goals    Home Shots    Away Shots
-1           2022-01-01     Barcelona       Real Madrid     2             1             10            12
-2           2022-01-02     Bayern Munich   Borussia        3             0             15            7
-3           2022-01-03     Paris Saint-G.  Liverpool       1             1             9             11
-4           2022-01-04     Juventus        Manchester Utd  2             2             12            8
-5           2022-01-05     Chelsea         Arsenal         1             0             11            9
-6           2022-01-06     Manchester City Tottenham       4             1             14            6
-7           2022-01-07     Atletico Madrid Valencia        2             0             10            8
-8           2022-01-08     Inter Milan     AC Milan        2             1             13            10
-9           2022-01-09     Borussia        Barcelona       0             2             8             14
-10          2022-01-10     Liverpool       Bayern Munich   2             3             11            1
+Teams Table:
+TeamID	TeamName	Country	Coach	Stadium
+1	Real Madrid	Spain	Zinedine Zidane	Santiago Bernabeu
+2	Barcelona	Spain	Ronald Koeman	Camp Nou
+3	Bayern Munich	Germany	Julian Nagelsmann	Allianz Arena
+4	Manchester City	England	Pep Guardiola	Etihad Stadium
+5	Juventus	Italy	Massimiliano Allegri	Allianz Stadium
+Players Table:
+PlayerID	PlayerName	TeamID	Country	Position	Age	Height	Weight
+1	Cristiano Ronaldo	5	Portugal	Forward	36	187	83
+2	Lionel Messi	2	Argentina	Forward	34	170	72
+3	Robert Lewandowski	3	Poland	Forward	32	185	79
+4	Kevin De Bruyne	4	Belgium	Midfield	30	181	70
+5	Sergio Ramos	1	Spain	Defender	35	184	82
+Matches Table:
+MatchID	HomeTeamID	AwayTeamID	Date	Venue	Competition	Result
+1	1	2	2022-01-01	Santiago Bernabeu	La Liga	2-1
+2	3	4	2022-02-01	Allianz Arena	Bundesliga	3-0
+3	5	1	2022-03-01	Allianz Stadium	Serie A	1-2
+Goals Table:
+GoalID	MatchID	ScorerID	AssistID	Minute
+1	1	1	2	15
+2	1	2	3	35
+3	2	3	NULL	50
+4	2	3	NULL	70
+5	3	5	1	60
+
