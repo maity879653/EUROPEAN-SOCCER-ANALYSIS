@@ -1,1 +1,32 @@
+import sqlite3
+import matplotlib.pyplot as plt
+
+# Connect to the database
+conn = sqlite3.connect('football_results.db')
+cursor = conn.cursor()
+
+# Fetch the data from the table
+cursor.execute("SELECT home_team, COUNT(*) FROM football_results WHERE home_score > away_score GROUP BY home_team")
+results = cursor.fetchall()
+
+# Separate the teams and wins into separate lists
+teams = []
+wins = []
+for row in results:
+    teams.append(row[0])
+    wins.append(row[1])
+
+# Create the bar chart
+plt.bar(teams, wins)
+plt.xlabel('Team')
+plt.ylabel('Number of Wins')
+plt.title('Number of Wins for Each Team')
+plt.xticks(rotation=45)
+plt.tight_layout()
+
+# Display the chart
+plt.show()
+
+# Close the connection
+conn.close()
 
